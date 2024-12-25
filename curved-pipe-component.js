@@ -1,10 +1,10 @@
 import { __decorate } from "tslib";
 import { BaseCustomWebComponentConstructorAppend, css, cssFromString, customElement, DomHelper, html, property } from "@node-projects/base-custom-webcomponent";
 
-class CurvedPipe extends BaseCustomWebComponentConstructorAppend {
+export class CurvedPipe extends BaseCustomWebComponentConstructorAppend {
     constructor() {
         super();
-        //this.attachShadow({ mode: 'open' });
+        this.attachShadow({ mode: 'open' });
         this._size = '100';
         this._color = '#3498db';
         this._flow = false;
