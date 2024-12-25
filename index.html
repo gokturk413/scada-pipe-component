@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCADA Pipe Component Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .demo-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .controls {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        .control-group {
+            margin-bottom: 10px;
+        }
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+    </style>
+</head>
+<body>
+    <h1>SCADA Pipe Component Demo</h1>
+    
+    <div class="demo-container">
+        <h2>Horizontal Pipe with Flow</h2>
+        <pipe-component direction="horizontal" width="300" height="20" color="#3498db" flow="true"></pipe-component>
+    </div>
+
+    <div class="demo-container">
+        <h2>Vertical Pipe</h2>
+        <pipe-component direction="vertical" width="200" height="20" color="#e74c3c" flow="false"></pipe-component>
+    </div>
+
+    <div class="demo-container">
+        <h2>Curved Pipes</h2>
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+            <div>
+                <h3>Top-Right</h3>
+                <curved-pipe size="100" color="#3498db" flow="true" direction="top-right"></curved-pipe>
+            </div>
+            <div>
+                <h3>Top-Left</h3>
+                <curved-pipe size="100" color="#e74c3c" flow="true" direction="top-left"></curved-pipe>
+            </div>
+            <div>
+                <h3>Bottom-Right</h3>
+                <curved-pipe size="100" color="#2ecc71" flow="true" direction="bottom-right"></curved-pipe>
+            </div>
+            <div>
+                <h3>Bottom-Left</h3>
+                <curved-pipe size="100" color="#f1c40f" flow="true" direction="bottom-left"></curved-pipe>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <h2>Interactive Demo</h2>
+        <div id="interactive-pipe">
+            <pipe-component id="demo-pipe" direction="horizontal" width="200" height="20" color="#2ecc71" flow="true"></pipe-component>
+        </div>
+        
+        <div class="control-group">
+            <label>Direction:</label>
+            <select id="direction">
+                <option value="horizontal">Horizontal</option>
+                <option value="vertical">Vertical</option>
+            </select>
+        </div>
+        
+        <div class="control-group">
+            <label>Width:</label>
+            <input type="range" id="width" min="50" max="400" value="200">
+            <span id="width-value">200px</span>
+        </div>
+        
+        <div class="control-group">
+            <label>Height:</label>
+            <input type="range" id="height" min="10" max="50" value="20">
+            <span id="height-value">20px</span>
+        </div>
+        
+        <div class="control-group">
+            <label>Color:</label>
+            <input type="color" id="color" value="#2ecc71">
+        </div>
+        
+        <div class="control-group">
+            <label>Flow:</label>
+            <input type="checkbox" id="flow" checked>
+        </div>
+    </div>
+
+    <div class="controls">
+        <h2>Interactive Curved Pipe Demo</h2>
+        <div id="interactive-curved-pipe">
+            <curved-pipe id="demo-curved-pipe" size="100" color="#3498db" flow="true" direction="top-right"></curved-pipe>
+        </div>
+        
+        <div class="control-group">
+            <label>Direction:</label>
+            <select id="curved-direction">
+                <option value="top-right">Top Right</option>
+                <option value="top-left">Top Left</option>
+                <option value="bottom-right">Bottom Right</option>
+                <option value="bottom-left">Bottom Left</option>
+            </select>
+        </div>
+        
+        <div class="control-group">
+            <label>Size:</label>
+            <input type="range" id="curved-size" min="50" max="200" value="100">
+            <span id="curved-size-value">100px</span>
+        </div>
+        
+        <div class="control-group">
+            <label>Color:</label>
+            <input type="color" id="curved-color" value="#3498db">
+        </div>
+        
+        <div class="control-group">
+            <label>Flow:</label>
+            <input type="checkbox" id="curved-flow" checked>
+        </div>
+    </div>
+
+    <script src="pipe-component.js"></script>
+    <script src="curved-pipe-component.js"></script>
+    <script>
+        const pipe = document.getElementById('demo-pipe');
+        const controls = {
+            direction: document.getElementById('direction'),
+            width: document.getElementById('width'),
+            height: document.getElementById('height'),
+            color: document.getElementById('color'),
+            flow: document.getElementById('flow')
+        };
+
+        // Update values display
+        const widthValue = document.getElementById('width-value');
+        const heightValue = document.getElementById('height-value');
+
+        // Event listeners
+        controls.direction.addEventListener('change', (e) => pipe.direction = e.target.value);
+        controls.width.addEventListener('input', (e) => {
+            pipe.width = e.target.value;
+            widthValue.textContent = `${e.target.value}px`;
+        });
+        controls.height.addEventListener('input', (e) => {
+            pipe.height = e.target.value;
+            heightValue.textContent = `${e.target.value}px`;
+        });
+        controls.color.addEventListener('input', (e) => pipe.color = e.target.value);
+        controls.flow.addEventListener('change', (e) => pipe.flow = e.target.checked);
+
+        // Curved pipe controls
+        const curvedPipe = document.getElementById('demo-curved-pipe');
+        const curvedControls = {
+            direction: document.getElementById('curved-direction'),
+            size: document.getElementById('curved-size'),
+            color: document.getElementById('curved-color'),
+            flow: document.getElementById('curved-flow')
+        };
+
+        const curvedSizeValue = document.getElementById('curved-size-value');
+
+        curvedControls.direction.addEventListener('change', (e) => curvedPipe.direction = e.target.value);
+        curvedControls.size.addEventListener('input', (e) => {
+            curvedPipe.size = e.target.value;
+            curvedSizeValue.textContent = `${e.target.value}px`;
+        });
+        curvedControls.color.addEventListener('input', (e) => curvedPipe.color = e.target.value);
+        curvedControls.flow.addEventListener('change', (e) => curvedPipe.flow = e.target.checked);
+    </script>
+</body>
+</html>
