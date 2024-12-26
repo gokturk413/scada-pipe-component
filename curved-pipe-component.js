@@ -1,11 +1,11 @@
-import { __decorate } from "tslib";
-import { BaseCustomWebComponentConstructorAppend, css, cssFromString, customElement, DomHelper, html, property } from "@node-projects/base-custom-webcomponent";
+//import { __decorate } from "tslib";
+//import { BaseCustomWebComponentConstructorAppend, css, cssFromString, customElement, DomHelper, html, property } from "@node-projects/base-custom-webcomponent";
 
-export class CurvedPipe extends BaseCustomWebComponentConstructorAppend {
+/*export*/ class CurvedPipe extends HTMLElement {
     constructor() {
         super();
-        //this.attachShadow({ mode: 'open' });
-        this._size = '100';
+        this.attachShadow({ mode: 'open' }); // Shadow DOM attached
+        this._size = 100; // Default size
         this._color = '#3498db';
         this._flow = false;
         this._direction = 'top-right';
@@ -13,10 +13,6 @@ export class CurvedPipe extends BaseCustomWebComponentConstructorAppend {
 
     static get observedAttributes() {
         return ['size', 'color', 'flow', 'direction'];
-    }
-
-    connectedCallback() {
-        this.render();
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
@@ -50,78 +46,63 @@ export class CurvedPipe extends BaseCustomWebComponentConstructorAppend {
         this.setAttribute('direction', value);
     }
 
-    render() {
-        const thickness = this._size / 5;
-        
-        // Calculate transform based on direction
-        let transform = '';
-        
-        switch(this._direction) {
-            case 'top-left':
-                transform = 'scale(-1, 1)';
-                break;
-            case 'bottom-right':
-                transform = 'scale(1, -1)';
-                break;
-            case 'bottom-left':
-                transform = 'scale(-1, -1)';
-                break;
-            default: // top-right
-                transform = 'scale(1, 1)';
-        }
+    connectedCallback() {
+        this.render();
+    }
 
+    render() {
         const styles = `
             :host {
                 display: inline-block;
-            }
-            .curved-pipe {
                 width: ${this._size}px;
                 height: ${this._size}px;
-                position: relative;
-                transform: ${transform};
             }
             svg {
                 width: 100%;
                 height: 100%;
-                position: absolute;
-                top: 0;
-                left: 0;
             }
-            .pipe-path {
+            .curved-pipe {
                 fill: none;
                 stroke: ${this._color};
-                stroke-width: ${thickness}px;
+                stroke-width: ${this._size / 5}px;
+                vector-effect: non-scaling-stroke;
             }
-            .flow-dots {
-                fill: rgba(255, 255, 255, 0.2);
-                animation: flow 2s linear infinite;
+            .flow-animation {
+                fill: none;
+                stroke: url(#flowGradient);
+                stroke-width: ${this._size / 5}px;
+                stroke-dasharray: 5;
+                animation: flow 0.5s linear infinite;
+                vector-effect: non-scaling-stroke;
             }
             @keyframes flow {
                 0% {
-                    offset-distance: 0%;
+                    stroke-dashoffset: 10;
                 }
                 100% {
-                    offset-distance: 100%;
+                    stroke-dashoffset: 0;
                 }
             }
         `;
 
-        const padding = thickness;
-        const path = `M${padding} ${this._size - padding} Q${padding} ${padding} ${this._size - padding} ${padding}`;
+        const path = `M${this._size / 2} ${this._size} Q${this._size / 2} ${this._size / 2} ${this._size} ${this._size / 2}`;
 
         this.shadowRoot.innerHTML = `
             <style>${styles}</style>
-            <div class="curved-pipe">
-                <svg viewBox="0 0 ${this._size} ${this._size}">
-                    <path class="pipe-path" d="${path}"/>
-                    ${this._flow ? `
-                        <circle class="flow-dots" r="${thickness/4}" style="offset-path: path('${path}')"/>
-                        <circle class="flow-dots" r="${thickness/4}" style="offset-path: path('${path}'); animation-delay: -0.5s"/>
-                        <circle class="flow-dots" r="${thickness/4}" style="offset-path: path('${path}'); animation-delay: -1s"/>
-                        <circle class="flow-dots" r="${thickness/4}" style="offset-path: path('${path}'); animation-delay: -1.5s"/>
-                    ` : ''}
-                </svg>
-            </div>
+            <svg viewBox="0 0 ${this._size} ${this._size}">
+                <defs>
+                    <linearGradient id="flowGradient" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="rgba(255, 255, 255, 0.2)"/>
+                        <stop offset="20%" stop-color="rgba(255, 255, 255, 0.2)"/>
+                        <stop offset="80%" stop-color="rgba(255, 255, 255, 0.2)"/>
+                        <stop offset="100%" stop-color="rgba(255, 255, 255, 0.2)"/>
+                    </linearGradient>
+                </defs>
+                <path class="curved-pipe" d="${path}"/>
+                ${this._flow ? `
+                    <path class="flow-animation" d="${path}"/>
+                ` : ''}
+            </svg>
         `;
     }
 }
