@@ -1,7 +1,7 @@
 import { __decorate } from "tslib";
 import { BaseCustomWebComponentConstructorAppend, css, cssFromString, customElement, DomHelper, html, property } from "@node-projects/base-custom-webcomponent";
 
-export class Pipe extends HTMLElement {
+export class Pipe extends BaseCustomWebComponentConstructorAppend {
     constructor() {
         super();
         //this.attachShadow({ mode: 'open' });
