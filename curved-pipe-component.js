@@ -1,10 +1,10 @@
-//import { __decorate } from "tslib";
-//import { BaseCustomWebComponentConstructorAppend, css, cssFromString, customElement, DomHelper, html, property } from "@node-projects/base-custom-webcomponent";
+import { __decorate } from "tslib";
+import { BaseCustomWebComponentConstructorAppend, css, cssFromString, customElement, DomHelper, html, property } from "@node-projects/base-custom-webcomponent";
 
-/*export*/ class CurvedPipe extends HTMLElement {
+export class CurvedPipe extends HTMLElement {
     constructor() {
         super();
-        this.attachShadow({ mode: 'open' }); // Shadow DOM attached
+        //this.attachShadow({ mode: 'open' }); // Shadow DOM attached
         this._size = 100; // Default size
         this._color = '#3498db';
         this._flow = false;

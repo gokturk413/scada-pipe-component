@@ -1,10 +1,10 @@
-//import { __decorate } from "tslib";
-//import { BaseCustomWebComponentConstructorAppend, css, cssFromString, customElement, DomHelper, html, property } from "@node-projects/base-custom-webcomponent";
+import { __decorate } from "tslib";
+import { BaseCustomWebComponentConstructorAppend, css, cssFromString, customElement, DomHelper, html, property } from "@node-projects/base-custom-webcomponent";
 
-/*export*/ class Pipe extends HTMLElement {
+export class Pipe extends HTMLElement {
     constructor() {
         super();
-        this.attachShadow({ mode: 'open' });
+        //this.attachShadow({ mode: 'open' });
         this._size = 100; // Default size
         this._width = '100';
         this._height = '20';
