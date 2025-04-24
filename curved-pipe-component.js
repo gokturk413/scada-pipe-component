@@ -1,18 +1,23 @@
 import { __decorate } from "tslib";
 import { BaseCustomWebComponentConstructorAppend, css, cssFromString, customElement, DomHelper, html, property } from "@node-projects/base-custom-webcomponent";
 
-export class CurvedPipe extends BaseCustomWebComponentConstructorAppend {
+/*export*/ class CurvedPipe extends HTMLElement {
     constructor() {
         super();
-        //this.attachShadow({ mode: 'open' }); // Shadow DOM attached
-        this._size = 100; // Default size
+        this.attachShadow({ mode: 'open' });
+        this._size = '100';
+        this._diameter = '20';
         this._color = '#3498db';
         this._flow = false;
         this._direction = 'top-right';
     }
 
     static get observedAttributes() {
-        return ['size', 'color', 'flow', 'direction'];
+        return ['size', 'diameter', 'color', 'flow', 'direction'];
+    }
+
+    connectedCallback() {
+        this.render();
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
@@ -40,40 +45,68 @@ export class CurvedPipe extends BaseCustomWebComponentConstructorAppend {
         this.setAttribute('flow', value);
     }
 
+    get diameter() { return this._diameter; }
+    set diameter(value) {
+        this._diameter = value;
+        this.setAttribute('diameter', value);
+    }
+
     get direction() { return this._direction; }
     set direction(value) {
         this._direction = value;
         this.setAttribute('direction', value);
     }
 
-    connectedCallback() {
-        this.render();
-    }
-
     render() {
+        const thickness = this._diameter;
+        
+        // Calculate transform based on direction
+        let transform = '';
+        
+        switch(this._direction) {
+            case 'top-left':
+                transform = 'scale(-1, 1)';
+                break;
+            case 'bottom-right':
+                transform = 'scale(1, -1)';
+                break;
+            case 'bottom-left':
+                transform = 'scale(-1, -1)';
+                break;
+            default: // top-right
+                transform = 'scale(1, 1)';
+        }
+
         const styles = `
             :host {
                 display: inline-block;
+            }
+            .curved-pipe {
                 width: ${this._size}px;
                 height: ${this._size}px;
+                position: relative;
+                transform: ${transform};
             }
             svg {
                 width: 100%;
                 height: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
             }
-            .curved-pipe {
+            .pipe-path {
                 fill: none;
                 stroke: ${this._color};
-                stroke-width: ${this._size / 5}px;
-                vector-effect: non-scaling-stroke;
+                stroke-width: ${thickness}px;
+                vector-effect: non-scaling-stroke; 
             }
             .flow-animation {
                 fill: none;
                 stroke: url(#flowGradient);
-                stroke-width: ${this._size / 5}px;
+                stroke-width: ${thickness}px;
                 stroke-dasharray: 5;
                 animation: flow 0.5s linear infinite;
-                vector-effect: non-scaling-stroke;
+                vector-effect: non-scaling-stroke; 
             }
             @keyframes flow {
                 0% {
@@ -85,26 +118,49 @@ export class CurvedPipe extends BaseCustomWebComponentConstructorAppend {
             }
         `;
 
-        const path = `M${this._size / 2} ${this._size} Q${this._size / 2} ${this._size / 2} ${this._size} ${this._size / 2}`;
+        const padding = thickness;
+        const path = `M${padding} ${this._size - padding} Q${padding} ${padding} ${this._size - padding} ${padding}`;
 
         this.shadowRoot.innerHTML = `
             <style>${styles}</style>
-            <svg viewBox="0 0 ${this._size} ${this._size}">
-                <defs>
-                    <linearGradient id="flowGradient" gradientUnits="userSpaceOnUse">
-                        <stop offset="0%" stop-color="rgba(255, 255, 255, 0.2)"/>
-                        <stop offset="20%" stop-color="rgba(255, 255, 255, 0.2)"/>
-                        <stop offset="80%" stop-color="rgba(255, 255, 255, 0.2)"/>
-                        <stop offset="100%" stop-color="rgba(255, 255, 255, 0.2)"/>
-                    </linearGradient>
-                </defs>
-                <path class="curved-pipe" d="${path}"/>
-                ${this._flow ? `
-                    <path class="flow-animation" d="${path}"/>
-                ` : ''}
-            </svg>
+            <div class="curved-pipe">
+                <svg viewBox="0 0 ${this._size} ${this._size}">
+                    <defs>
+                        <linearGradient id="flowGradient" x1="0%" y1="0%" x2="100%" y2="0%" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="transparent"/>
+                            <stop offset="20%" stop-color="rgba(255, 255, 255, 0.2)"/>
+                            <stop offset="80%" stop-color="rgba(255, 255, 255, 0.2)"/>
+                            <stop offset="100%" stop-color="transparent"/>
+                        </linearGradient>
+                    </defs>
+                    <path class="pipe-path" d="${path}"/>
+                    ${this._flow ? `
+                        <path class="flow-animation" d="${path}"/>
+                    ` : ''}
+                </svg>
+            </div>
         `;
     }
 }
+
+__decorate([
+    property({ type: String })
+], CurvedPipe.prototype, "size", void 0);
+
+__decorate([
+    property({ type: String })
+], CurvedPipe.prototype, "diameter", void 0);
+
+__decorate([
+    property({ type: String })
+], CurvedPipe.prototype, "color", void 0);
+
+__decorate([
+    property({ type: Boolean, values: [false, true] })
+], CurvedPipe.prototype, "flow", void 0);
+
+__decorate([
+    property({ type: String, values: ['top-right', 'top-left', 'bottom-right', 'bottom-left'] })
+], CurvedPipe.prototype, "direction", void 0);
 
 customElements.define('curved-pipe', CurvedPipe);
