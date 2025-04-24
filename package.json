@@ -4,13 +4,18 @@
   "description": "SCADA/HMI pipe components with flow animation for web applications",
   "main": "dist/index.js",
   "module": "dist/index.js",
+  "type": "module",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "mkdir dist && copy *.js dist",
+    "build": "if not exist dist mkdir dist && copy *.js dist\\",
     "prepare": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@node-projects/base-custom-webcomponent": "^0.16.0",
+    "tslib": "^2.6.0"
   },
   "keywords": [
     "scada",
@@ -19,16 +24,18 @@
     "flow",
     "animation",
     "web-component",
-    "custom-element"
+    "custom-element",
+    "iobroker",
+    "webui"
   ],
   "author": "gokturk413",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yourusername/scada-pipe-component.git"
+    "url": "git+https://github.com/gokturk413/scada-pipe-component.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/scada-pipe-component/issues"
+    "url": "https://github.com/gokturk413/scada-pipe-component/issues"
   },
-  "homepage": "https://github.com/yourusername/scada-pipe-component#readme"
+  "homepage": "https://github.com/gokturk413/scada-pipe-component#readme"
 }
