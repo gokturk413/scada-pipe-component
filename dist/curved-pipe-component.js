@@ -4,7 +4,7 @@ import { BaseCustomWebComponentConstructorAppend, css, cssFromString, customElem
 export class CurvedPipe extends HTMLElement {
     constructor() {
         super();
-        //this.attachShadow({ mode: 'open' });
+        this.attachShadow({ mode: 'open' });
         this._size = '100';
         this._diameter = '20';
         this._color = '#3498db';
@@ -58,73 +58,65 @@ export class CurvedPipe extends HTMLElement {
     }
 
     render() {
-        const thickness = this._diameter;
-        
-        // Calculate transform based on direction
-        let transform = '';
-        
-        switch(this._direction) {
-            case 'top-left':
-                transform = 'scale(-1, 1)';
-                break;
-            case 'bottom-right':
-                transform = 'scale(1, -1)';
-                break;
-            case 'bottom-left':
-                transform = 'scale(-1, -1)';
-                break;
-            default: // top-right
-                transform = 'scale(1, 1)';
-        }
-
         const styles = `
             :host {
                 display: inline-block;
-            }
-            .curved-pipe {
                 width: ${this._size}px;
                 height: ${this._size}px;
                 position: relative;
-                transform: ${transform};
+            }
+            .curved-pipe {
+                width: 100%;
+                height: 100%;
+                position: absolute;
             }
             svg {
                 width: 100%;
                 height: 100%;
+                overflow: visible;
                 position: absolute;
-                top: 0;
-                left: 0;
+                left: ${this._direction.includes('left') ? this._diameter/2 : -this._diameter/2}px;
+                top: ${this._direction.includes('top') ? this._diameter/2 : -this._diameter/2}px;
             }
             .pipe-path {
                 fill: none;
                 stroke: ${this._color};
-                stroke-width: ${thickness}px;
-                vector-effect: non-scaling-stroke; 
+                stroke-width: ${this._diameter};
+                vector-effect: non-scaling-stroke;
             }
             .flow-animation {
                 fill: none;
                 stroke: url(#flowGradient);
-                stroke-width: ${thickness}px;
-                stroke-dasharray: 5;
+                stroke-width: ${this._diameter};
+                stroke-dasharray: 10;
                 animation: flow 0.5s linear infinite;
-                vector-effect: non-scaling-stroke; 
+                vector-effect: non-scaling-stroke;
             }
             @keyframes flow {
                 0% {
                     stroke-dashoffset: 10;
                 }
                 100% {
-                    stroke-dashoffset: 0;
+                    stroke-dashoffset: -10;
                 }
             }
         `;
 
-        const padding = thickness;
-        const path = `M${padding} ${this._size - padding} Q${padding} ${padding} ${this._size - padding} ${padding}`;
+        // Convert string values to numbers and remove 'px'
+        const size = parseFloat(this._size);
+        const diameter = parseFloat(this._diameter);
+        const padding = 0; // Removed padding
+        const viewBoxSize = size;
+
+        const path = this._direction === 'top-right' ? `M0,${size} Q0,0 ${size},0` :
+                    this._direction === 'top-left' ? `M${size},${size} Q${size},0 0,0` :
+                    this._direction === 'bottom-right' ? `M0,0 Q0,${size} ${size},${size}` :
+                    `M${size},0 Q${size},${size} 0,${size}`;
 
         this.shadowRoot.innerHTML = `
             <style>${styles}</style>
             <div class="curved-pipe">
-                <svg viewBox="0 0 ${this._size} ${this._size}">
+                <svg viewBox="0 0 ${viewBoxSize} ${viewBoxSize}">
                     <defs>
                         <linearGradient id="flowGradient" x1="0%" y1="0%" x2="100%" y2="0%" gradientUnits="userSpaceOnUse">
                             <stop offset="0%" stop-color="transparent"/>
@@ -143,6 +135,15 @@ export class CurvedPipe extends HTMLElement {
     }
 }
 
+var Direction;
+(function (Direction){
+  Direction["TOP_RIGHT"]="top-right";
+  Direction["TOP_LEFT"]="top-left";
+  Direction["BOTTOM_RIGHT"]="bottom-right";
+  Direction["BOTTOM_LEFT"]="bottom-left";
+})(Direction||(Direction={}));
+
+
 __decorate([
     property({ type: String })
 ], CurvedPipe.prototype, "size", void 0);
@@ -160,7 +161,7 @@ __decorate([
 ], CurvedPipe.prototype, "flow", void 0);
 
 __decorate([
-    property({ type: String, values: ['top-right', 'top-left', 'bottom-right', 'bottom-left'] })
+    property({ type: Direction, values: [Direction.TOP_RIGHT, Direction.TOP_LEFT, Direction.BOTTOM_RIGHT, Direction.BOTTOM_LEFT] })
 ], CurvedPipe.prototype, "direction", void 0);
 
 customElements.define('curved-pipe', CurvedPipe);

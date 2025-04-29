@@ -1,6 +1,6 @@
 {
   "name": "@gokturk413/scada-pipe-component",
-  "version": "3.31.1",
+  "version": "3.31.16",
   "description": "SCADA/HMI pipe components with flow animation for web applications",
   "main": "dist/index.js",
   "module": "dist/index.js",
